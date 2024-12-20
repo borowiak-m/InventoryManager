@@ -19,10 +19,14 @@ type config struct {
 
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
+	// some middleware
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Logger)
+	// set timeout at request context level
+	r.Use(middleware.Timeout(60 * time.Second))
+	// v1 routes
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.healthCheckHandler)
 	})
